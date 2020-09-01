@@ -7,7 +7,7 @@ https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/
 
 - Exercise はないと思っていた. が、がっつりあった
   - ２時間弱の内容を見るのに６時間かかってしまった
-- Auto caption は割とミスがある
+- Movie の auto caption は割とミスがある
 - 毎回、最後の Takeaways で覚えて帰ることをまとめてくれている
 - 予習すべき内容
   - [素数判定](https://ja.wikipedia.org/wiki/%E7%B4%A0%E6%95%B0%E5%88%A4%E5%AE%9A#%E6%A7%98%E3%80%85%E3%81%AA%E5%88%A4%E5%AE%9A%E6%B3%95)
@@ -99,10 +99,27 @@ println(aFunction) // almost same with above
 
 ### Recursion
 
-- Tail recursive
+- 再帰呼び出しを使うと StackOverflow 例外に遭遇することがよくある
+  - 再帰の深さには上限がある
+  - Functions で作成した素数判定の関数は、引数 n が与えられたときに およそ n/2 回の再帰処理を行うので n を 600 以上にすると簡単に StackOverflow が起きる
+  - 他の例では、深い木構造データの探索などを行うと Stack 数の上限に到達して StackOverflow 例外が発生する
+- Tail recursive な再帰呼び出しを書くことで StackOverflow の起きない処理に compiler が勝手に変換してくれる
   - 関数内の最後の statement が「自身の呼び出しで終わっている」かどうかでコンパイラの挙動が変化する
   - `Tail call optimization (TCO)` と呼ばれているらしい
   - 自身の呼び出しを「含む」 expression ではダメ
+
+```scala
+def factorial(n: Int): Int = {
+  if (n <= 1) 1
+  else n * factorial(n-1) // NOT tail recursive
+}
+
+def factorial2(n: Int, acc: Int):Int = {
+  if (n <= 1) acc
+  else factorial2(n-1, n*acc) // tail recursive
+}
+```
+
 - Tail recursive となっているかどうかは IntelliJ なら [GUI で見ることができる](https://blog.jetbrains.com/scala/2012/05/24/embrace-recursion/)
 
 ![](https://blog.jetbrains.com/wp-content/uploads/2012/05/scala-1.png)
@@ -124,8 +141,9 @@ def fibo(nn:Int, cc:Int, fib1:Int, fib2:Int): Int = {
 ```
 
 - 所感
-  - 繰り返しを初期値から始めた方が書きやすい？
+  - 繰り返しを初期値から始めた方がイメージしやすい？
   - こちらの exercise も時間はかかるかもしれないがやっておいたほうが良い
+  - Akka の example コードでは一度も見ていない
 
 Tail call optimization の導入状況：
 
